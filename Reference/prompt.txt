@@ -1,0 +1,3324 @@
+  - Platform: Super Admin, System Manager, System Consultant 
+- Account types: 
+- Association context defines role and permissions 
+- Users are global identities 
+ACCOUNT SYSTEM RULES:  
+ 
+8. Reporting & Analytics 
+7. Notification System 
+6. Wallet & Payment System (multi-level wallets + revenue split) 
+5. Ads System 
+4. Marketplace (posts, categories, approvals) 
+   - Members (Master, Vendor, Sub accounts) 
+   - Branches 
+   - Regions 
+   - Association 
+3. Organizational Structure: 
+2. RBAC (dynamic roles & permissions) 
+1. Authentication & Account System 
+CORE MODULES:  
+ 
+- Notifications: In-app, Email, Push, SMS 
+- Payments: Paystack 
+- Storage: Cloudflare R2 
+- Database: PostgreSQL 
+- Backend: NestJS (modular monolith) 
+- Frontend: Next.js (PWA enabled) 
+TECH STACK: 
+ 
+- Platform has a separate admin domain 
+- Each association has a custom domain and branding 
+- Each association is fully isolated using association_id 
+- Multi-tenant (shared PostgreSQL database) 
+SYSTEM ARCHITECTURE:  
+ 
+manage membership, marketplace, payments, and communication. 
+MemSyst is a Progressive Web App (PWA) platform designed for national associations to 
+ 
+multi-tenant SaaS platform called MemSyst. 
+You are a senior software architect and backend engineer designing an enterprise-grade 
+ 
+易  PLATFORM DEFINITION  - SYSTEM PROMPT   
+----------------Page (0) Break----------------
+4. SMS 
+3. Push 
+2. Email 
+1. In-app 
+NOTIFICATION PRIORITY: 
+ 
+- Fees deducted from wallet 
+- Posts require approval 
+- Only Master and Vendor accounts can post 
+MARKETPLACE RULES:  
+ 
+- Payments update wallet balances 
+- Webhook verification required 
+- Paystack integration 
+PAYMENT FLOW:  
+ 
+- Revenue split across platform, association, region, branch 
+- All transactions recorded in a central ledger 
+  - Member  
+  - Branch 
+  - Region 
+  - Association 
+  - Platform 
+- Wallets exist at: 
+WALLET SYSTEM:  
+ 
+- National Admin approves → account becomes active 
+- Status becomes pending 
+- User logs in → completes profile 
+- Account created → inactive 
+APPROVAL FLOW:  
+ 
+- JWT authentication 
+- MFA via email OTP 
+- Platform admins use a separate login 
+- Users log in via association-specific domains 
+AUTHENTICATION RULES:  
+ 
+- Only Vendor and Master can create marketplace posts 
+- Only Master accounts can create Sub accounts 
+  - Members: Master, Vendor, Sub 
+Manager 
+  - Association Admin: National Admin, Manager, Consultant, Regional Manager, Branch 
+----------------Page (1) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+millions of users. 
+Design scalable, secure, and maintainable backend and frontend systems suitable for 
+GOAL: 
+ 
+- Audit logging required for all critical actions 
+- Strict tenant isolation 
+- Every query must include association_id 
+SECURITY RULES: 
+ 
+ 
+----------------Page (2) Break----------------
+• 
+Return JWT access token + refresh token 
+• 
+Load association context (role, permissions) 
+• 
+Ensure user belongs to the resolved association 
+• 
+Validate user 
+• 
+Input: email + password 
+Login Flow: 
+2. Authentication System 
+ 
+• 
+Middleware or guard implementation 
+• 
+Support platform domain separately 
+• 
+Reject requests from unknown domains 
+• 
+Map domain → association_id 
+• 
+Detect incoming request domain 
+1. Tenant Resolution (CRITICAL) 
+REQUIRED FEATURES  
+ 
+Design the full Authentication and Tenant Resolution system. 
+OBJECTIVE 
+ 
+• 
+Association Users: custom domains (e.g., www.associationA.com) 
+• 
+Platform Admin: admin.memsyst.com 
+Login Domains: 
+• 
+Data isolation enforced using association_id 
+• 
+Each request must resolve to an association via domain 
+• 
+Each association has a unique custom domain 
+Multi-Tenancy: 
+• 
+Authentication: Custom JWT + MFA (email OTP) 
+• 
+Frontend: Next.js (PWA) 
+• 
+Database: PostgreSQL (shared multi-tenant) 
+• 
+Backend: NestJS (modular monolith) 
+Architecture: 
+associations. 
+MemSyst is a multi-tenant Progressive Web App (PWA) platform for national 
+SYSTEM CONTEXT   
+ 
+implementation. 
+Use the following system definition and constraints to design a production-ready 
+MemSyst.  
+Tenant Resolution module for an enterprise-grade multi-tenant SaaS platform called 
+You are a senior backend architect and NestJS expert building the Authentication and 
+易  STEP 1 MASTER PROMPT  
+ 
+----------------Page (3) Break----------------
+ 
+• 
+Protect against token tampering 
+• 
+Validate association_id on every request 
+• 
+Prevent cross-tenant access 
+• 
+Rate limiting (login attempts) 
+• 
+Password hashing (bcrypt) 
+6. Security Requirements 
+ 
+• 
+Pending users await admin approval 
+• 
+Inactive users must complete profile 
+• 
+Only active users can log in 
+Rules: 
+• 
+suspended 
+• 
+active 
+• 
+pending 
+• 
+inactive 
+Statuses: 
+5. Account Status Handling 
+ 
+• 
+Initial status = inactive 
+• 
+Link to association via association_users 
+• 
+Store user in users table 
+• 
+Member registration (association-specific) 
+Support: 
+4. Registration (Basic Foundation) 
+ 
+• 
+Retry limits 
+• 
+Expiry handling 
+• 
+OTP generation 
+Include: 
+• 
+Verify OTP before issuing tokens 
+• 
+Send OTP via email 
+• 
+After password validation → trigger OTP 
+Flow: 
+3. MFA (Email OTP) 
+ 
+o 
+role_id 
+o 
+association_id 
+o 
+user_id 
+• 
+Token payload must include: 
+• 
+Refresh token (long-lived) 
+• 
+JWT access token (short-lived) 
+Token System: 
+----------------Page (4) Break----------------
+6. Edge Cases 
+ 
+• 
+Mitigations 
+• 
+Attack vectors 
+5. Security Considerations 
+ 
+• 
+Expiry strategy 
+• 
+JWT payload design 
+4. Token Structure 
+ 
+• 
+Role guard (basic structure) 
+• 
+JWT auth guard 
+• 
+Tenant resolution middleware 
+3. Middleware / Guards 
+ 
+Explain flow step-by-step. 
+• 
+OTPService 
+• 
+TenantService 
+• 
+AuthService 
+2. Service Logic (NestJS) 
+ 
+Include request & response formats. 
+• 
+POST /auth/register 
+• 
+POST /auth/refresh-token 
+• 
+POST /auth/verify-otp 
+• 
+POST /auth/login 
+1. API Endpoints 
+Provide: 
+REQUIRED OUTPUT  
+ 
+Ensure all queries enforce association_id where applicable. 
+• 
+permissions 
+• 
+roles 
+• 
+association_users 
+• 
+associations 
+• 
+users 
+DATABASE TABLES (USE THESE) 
+ 
+• 
+Role Guard (RBAC-ready) 
+• 
+Tenant Guard (association validation) 
+• 
+Auth Guard (JWT validation) 
+Design: 
+7. Middleware / Guards 
+----------------Page (5) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+implemented by developers. 
+Produce a production-ready Authentication module design that can be directly 
+GOAL  
+ 
+• 
+Ensure clean, maintainable structure 
+• 
+Avoid unnecessary complexity 
+• 
+Keep design scalable to millions of users 
+• 
+Enforce strict multi-tenant isolation using association_id 
+• 
+Follow modular monolith architecture 
+• 
+Use NestJS best practices (modules, services, guards) 
+CONSTRAINTS  
+ 
+• 
+Suspended account 
+• 
+Expired OTP 
+• 
+User belongs to different association 
+• 
+Wrong domain login 
+----------------Page (6) Break----------------
+• 
+Platform roles are global (association_id = NULL) 
+• 
+Roles can be created per association 
+• 
+Roles must be stored in database 
+1. Dynamic Roles System 
+REQUIRED FEATURES  
+ 
+• 
+Sub 
+• 
+Vendor 
+• 
+Master 
+Member Types (NOT roles but must be enforced) 
+• 
+Branch Manager 
+• 
+Regional Manager 
+• 
+National Consultant 
+• 
+National Manager 
+• 
+National Admin 
+Association Roles 
+• 
+System Consultant 
+• 
+System Manager 
+• 
+Super Admin 
+Platform Roles (Global) 
+ROLE STRUCTURE   
+ 
+• 
+Scalable and secure access control 
+• 
+Fine-grained permissions 
+• 
+Association-level roles (tenant-specific) 
+• 
+Platform-level roles (global) 
+Design a dynamic RBAC system that supports: 
+OBJECTIVE 
+ 
+• 
+Database is PostgreSQL 
+• 
+Backend uses NestJS (modular monolith) 
+• 
+Platform-level roles exist separately 
+• 
+Each association has its own roles and permissions 
+• 
+Each association is isolated using association_id 
+MemSyst is a multi-tenant platform where: 
+SYSTEM CONTEXT   
+ 
+Build on top of the existing Authentication and Tenant Resolution module. 
+Control (RBAC) system for an enterprise multi-tenant SaaS platform called MemSyst. 
+You are a senior backend architect and NestJS expert designing the Role-Based Access 
+ 
+易 Step Two----------------------------------- 
+----------------Page (7) Break----------------
+• 
+National Admin 
+Auto-create default roles: 
+When a new association is created: 
+7. Default Roles (System Initialization) 
+ 
+• 
+Delete roles (with restrictions) 
+• 
+Update roles 
+• 
+Assign permissions 
+• 
+Create roles 
+National Admin should be able to: 
+6. Admin Role Management  
+ 
+• 
+All checks must include association context 
+• 
+A role in one association must not affect another 
+• 
+Roles must respect association_id 
+5. Tenant Isolation (CRITICAL) 
+ 
+• 
+Decorators (e.g., @Permissions()) 
+• 
+Permission Guard 
+• 
+Role Guard 
+Design how permissions are enforced in NestJS: 
+4. Access Control Enforcement 
+ 
+• 
+Must support future multiple roles if needed  
+• 
+Role determines access level 
+• 
+A user (via association_users) has one role per association 
+3. Role Assignment 
+ 
+• 
+Many -to-many relationship 
+• 
+Roles map to permissions 
+• 
+Permissions stored centrally 
+Requirements: 
+• 
+view_reports 
+• 
+manage_wallet 
+• 
+approve_post 
+• 
+create_post 
+• 
+suspend_account 
+• 
+approve_member  
+• 
+create_member 
+Examples: 
+Design a granular permission system: 
+2. Permissions System 
+ 
+----------------Page (8) Break----------------
+ 
+Explain logic clearly. 
+• 
+AccessControlService 
+• 
+PermissionsService 
+• 
+RolesService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+Include request & response formats. 
+• 
+POST /roles/:id/permissions 
+• 
+DELETE /roles/:id 
+• 
+PUT /roles/:id 
+• 
+GET /roles 
+• 
+POST /roles (create role) 
+For role management: 
+2. API Endpoints 
+ 
+• 
+any additional tables (if needed) 
+• 
+role_permissions mapping 
+• 
+permissions table 
+• 
+roles table structure 
+1. Database Design 
+ 
+Provide: 
+REQUIRED OUTPUT  
+ 
+Add any missing tables if needed. 
+• 
+association_users 
+• 
+role_permissions 
+• 
+permissions 
+• 
+roles 
+DATABASE TABLES (USE & EXTEND)  
+ 
+This must be enforced alongside RBAC. 
+• 
+Only Vendor + Master → create posts 
+• 
+Only Master → create Sub accounts 
+Enforce: 
+Even though Member types are not roles: 
+8. Member-Type Enforcement  
+ 
+• 
+Member roles (mapped logically) 
+• 
+Branch Manager 
+• 
+Regional Manager 
+----------------Page (9) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+authentication and supports future scaling. 
+Produce a production-ready RBAC system design that integrates seamlessly with 
+GOAL  
+ 
+• 
+Ensure clean architecture and maintainability 
+• 
+Avoid hardcoding roles 
+• 
+Keep system scalable and flexible 
+• 
+Enforce strict multi-tenant isolation (association_id) 
+• 
+Use NestJS best practices (modules, guards, decorators) 
+CONSTRAINTS  
+ 
+• 
+User changes role dynamically 
+• 
+Permission removed from active role 
+• 
+Role deleted but still assigned 
+7. Edge Cases 
+ 
+• 
+Ensure safe role deletion 
+• 
+Prevent cross-tenant role abuse 
+• 
+Prevent privilege escalation 
+6. Security Considerations 
+ 
+• 
+Only users with create_post permission can post 
+• 
+Only National Admin can approve members 
+Example: 
+Show how to protect endpoints: 
+5. Enforcement Examples 
+ 
+Explain how they integrate with JWT auth. 
+o 
+@Permissions() 
+o 
+@Roles() 
+• 
+Custom decorators: 
+• 
+PermissionGuard 
+• 
+RoleGuard 
+Provide: 
+4. Guards & Decorators 
+----------------Page (10) Break----------------
+Each association must have: 
+2. Domain Management (CRITICAL) 
+ 
+Admin completes setup 
+Send invitation → 
+- Initial National Admin → 
+- Prefix (for account IDs) 
+- Domain  
+- Name  
+Assign: 
+Create Association → 
+Super Admin → 
+Flow: 
+1. Association Creation (Platform Admin Only) 
+ 
+REQUIRED FEATURES  
+ 
+4.  Initializing default roles, settings, and structure 
+3.  Supporting branding customization per association 
+2.  Mapping custom domains to associations 
+1.  Creating and managing associations (tenants) 
+Design a complete system for: 
+OBJECTIVE 
+ 
+• 
+Associations operate independently 
+• 
+Platform admins manage associations globally 
+o 
+Custom branding (logo, colors, UI) 
+o 
+Independent data and users 
+o 
+A unique custom domain 
+• 
+Each association has: 
+• 
+Each association is a tenant 
+MemSyst is a multi-tenant platform where: 
+SYSTEM CONTEXT   
+ 
+• 
+RBAC system (Step 2) 
+• 
+Authentication system (Step 1) 
+Build on top of: 
+MemSyst.  
+Domain Management, and Branding system for a multi-tenant SaaS platform called 
+You are a senior backend architect and NestJS expert designing the Association Setup, 
+ 
+易 Step Three------------------------------------------------ 
+----------------Page (11) Break----------------
+National Admin can update: 
+7. Association Settings Management 
+ 
+o 
+Confirm association settings 
+o 
+Profile 
+• 
+Complete setup: 
+• 
+First login 
+• 
+Register account 
+• 
+Receive invitation link 
+6. National Admin Setup Flow 
+ 
+• 
+Basic configuration settings 
+• 
+Default wallet (association-level) 
+• 
+Default permissions mapping 
+o 
+Branch Manager 
+o 
+Regional Manager 
+o 
+National Admin 
+• 
+Default roles: 
+Auto-create: 
+When an association is created: 
+5. Default System Initialization 
+ 
+branding_config (JSON) 
+Store in: 
+• 
+Optional UI customization 
+• 
+Theme settings (light/dark) 
+• 
+Secondary color 
+• 
+Primary color 
+• 
+Logo 
+Each association can configure: 
+4. Branding System 
+ 
+• 
+Only activate domain after verification 
+• 
+Verify ownership using DNS record (TXT or CNAME) 
+Before activating a domain: 
+3. Domain Verification (Security) 
+ 
+• 
+Support multiple environments (dev, staging, prod) 
+• 
+Reject unknown domains 
+• 
+Map incoming requests → association_id 
+• 
+Store domain in database 
+System must: 
+• 
+Custom external domain (e.g., www.associationA.com) 
+----------------Page (12) Break----------------
+• 
+PUT /associations/:id (update branding/settings) 
+• 
+GET /associations/:id 
+• 
+GET /associations 
+• 
+POST /associations (create) 
+Provide: 
+2. API Endpoints 
+ 
+• 
+domain verification fields 
+• 
+branding_config structure (JSON schema) 
+• 
+associations table (full structure) 
+Define: 
+1. Database Design 
+ 
+REQUIRED OUTPUT  
+ 
+Add fields if needed. 
+• 
+wallets 
+• 
+roles 
+• 
+association_users 
+• 
+users 
+• 
+associations 
+Use: 
+DATABASE TABLES (USE & EXTEND)  
+ 
+o 
+Subdomains if needed 
+o 
+HTTPS (SSL) 
+o 
+www vs non-www 
+• 
+How to handle: 
+• 
+How frontend serves correct branding dynamically 
+• 
+How backend resolves domain → association 
+Explain: 
+9. Domain Routing Strategy 
+ 
+• 
+No cross-tenant access allowed 
+• 
+Domain resolution must happen before any business logic 
+• 
+All association data must be scoped by association_id 
+8. Multi-Tenant Enforcement 
+ 
+• 
+Change domain (only platform admin can) 
+BUT cannot: 
+• 
+Configuration settings 
+• 
+Basic details (name, logo) 
+• 
+Branding 
+----------------Page (13) Break----------------
+• 
+Maintain strict multi-tenant isolation (association_id) 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Branding misconfiguration 
+• 
+Association suspended 
+• 
+Duplicate domain 
+• 
+Domain not verified 
+8. Edge Cases 
+ 
+• 
+Protect association data 
+• 
+Secure domain verification 
+• 
+Prevent domain hijacking 
+7. Security Considerations 
+ 
+• 
+How login page is customized per association 
+• 
+How branding is applied dynamically 
+• 
+How frontend detects domain 
+Explain: 
+6. Frontend Integration (Next.js) 
+ 
+• 
+How wallets are initialized 
+• 
+How permissions are assigned 
+• 
+How default roles are created 
+Explain: 
+5. Initialization Logic 
+ 
+• 
+Error handling for unknown domains 
+• 
+How to map domain → association_id 
+• 
+How to extract domain from request 
+• 
+Middleware implementation concept 
+Provide: 
+4. Domain Resolution Logic 
+ 
+Explain logic step-by-step. 
+• 
+BrandingService 
+• 
+DomainService 
+• 
+AssociationsService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+Include request & response formats. 
+• 
+POST /associations/verify-domain  
+----------------Page (14) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+and scalability. 
+of new tenants with custom domains and branding, while maintaining strict isolation 
+Produce a production-ready Association Management system that enables onboarding 
+GOAL  
+ 
+• 
+Ensure domain handling is secure and robust 
+• 
+Avoid hardcoding tenant logic 
+• 
+Keep system scalable and maintainable 
+----------------Page (15) Break----------------
+• 
+association_id 
+• 
+name  
+Each region must include: 
+• 
+Delete regions (with restrictions) 
+• 
+Update regions 
+• 
+Create regions 
+Only National Admin can: 
+1. Region Management  
+ 
+REQUIRED FEATURES  
+ 
+• 
+Scoped access control 
+• 
+Role assignment within structure 
+• 
+Hierarchical relationships 
+• 
+Branches 
+• 
+Regions 
+Design a complete system for managing: 
+OBJECTIVE 
+ 
+o 
+Notifications targeting 
+o 
+Reporting 
+o 
+Wallet distribution 
+o 
+Access control 
+• 
+Regions and Branches are used for: 
+• 
+Structure is controlled by National Admin 
+• 
+Each association is isolated (multi-tenant) 
+Rules: 
+│ ├── Members 
+│ ├── Branches 
+├── Regions 
+Association 
+MemSyst supports hierarchical organizational structures within each association: 
+SYSTEM CONTEXT   
+ 
+• 
+Association Setup + Domain System (Step 3) 
+• 
+RBAC (Step 2) 
+• 
+Authentication (Step 1) 
+Build on top of: 
+Structure module for a multi-tenant SaaS platform called MemSyst. 
+You are a senior backend architect and NestJS expert designing the Organizational 
+ 
+易 Step Four-------------------------------------------- 
+----------------Page (16) Break----------------
+Ensure: 
+o 
+branch_id 
+o 
+region_id 
+• 
+Assign: 
+When creating or approving members: 
+6. Member Assignment  
+ 
+• 
+National Admin can access all 
+• 
+Branch Managers can only access their branch data 
+• 
+Regional Managers can only access their region data 
+Implement logic so that: 
+5. Scoped Access Control 
+ 
+• 
+Assigning managers to branches 
+• 
+Assigning managers to regions 
+Design support for: 
+• 
+Branch level (e.g., Branch Manager) 
+• 
+Region level (e.g., Regional Manager) 
+• 
+Association level (e.g., National Admin) 
+Users can have roles scoped by: 
+4. Role Assignment Within Structure 
+ 
+o 
+One branch 
+o 
+One region 
+• 
+Members must belong to: 
+• 
+Region must belong to one association 
+• 
+Branch must belong to one region 
+Enforce: 
+3. Hierarchical Integrity 
+ 
+• 
+created_by 
+• 
+region_id 
+• 
+association_id 
+• 
+name  
+Each branch must include: 
+• 
+Delete branch (with restrictions) 
+• 
+Update branch details 
+• 
+Assign branch to a region 
+• 
+Create branches 
+Only National Admin can: 
+2. Branch Management  
+ 
+• 
+created_by 
+----------------Page (17) Break----------------
+Provide: 
+2. API Endpoints 
+ 
+• 
+indexing strategy 
+• 
+relationships (foreign keys) 
+• 
+branches table 
+• 
+regions table 
+Define: 
+1. Database Design 
+ 
+REQUIRED OUTPUT  
+ 
+Add fields if needed to support scope. 
+• 
+association_users 
+• 
+members 
+• 
+branches 
+• 
+regions 
+Use: 
+DATABASE TABLES (USE & EXTEND)  
+ 
+o 
+Manage members in branch only 
+• 
+Branch Manager: 
+o 
+Cannot access other regions 
+o 
+View members in region 
+• 
+Regional Manager: 
+Example rules: 
+9. Structure-Based Permissions (Integration with RBAC) 
+ 
+• 
+Soft delete (recommended) 
+Support: 
+• 
+Branch has members 
+• 
+Region has branches 
+Prevent deletion if: 
+8. Deletion Rules (CRITICAL) 
+ 
+• 
+branch_id (optional) 
+• 
+region_id (optional) 
+• 
+association_id 
+All queries must support filtering by: 
+7. Structure-Based Filtering 
+ 
+• 
+No orphan records 
+• 
+Valid mapping 
+----------------Page (18) Break----------------
+• 
+Region deleted with active branches 
+8. Edge Cases 
+ 
+• 
+Validate scope before returning data 
+• 
+Enforce association_id in all queries 
+• 
+Prevent cross-tenant access 
+7. Security Considerations 
+ 
+• 
+Get all members under a branch 
+• 
+Get all branches under a region 
+• 
+Get all members in a region 
+Provide examples: 
+6. Query Examples 
+ 
+• 
+Validate existence before linking 
+• 
+Prevent cross-association assignment 
+• 
+Prevent invalid region-branch mapping 
+5. Validation Rules 
+ 
+• 
+Integration with RBAC guards 
+• 
+How to enforce branch-level access 
+• 
+How to enforce region-level access 
+Explain: 
+4. Access Control Logic 
+ 
+Explain logic clearly. 
+• 
+StructureService (optional) 
+• 
+BranchesService 
+• 
+RegionsService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+Include request & response formats. 
+• 
+DELETE /branches/:id 
+• 
+PUT /branches/:id 
+• 
+GET /branches 
+• 
+POST /branches 
+Branches: 
+• 
+DELETE /regions/:id 
+• 
+PUT /regions/:id 
+• 
+GET /regions 
+• 
+POST /regions 
+Regions: 
+----------------Page (19) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+systems. 
+management, scoped access control, and integration with RBAC and membership 
+Produce a production-ready Organizational Structure system that supports hierarchical 
+GOAL  
+ 
+• 
+Avoid hardcoded structure logic 
+• 
+Ensure scalable and efficient queries 
+• 
+Maintain data integrity across hierarchy 
+• 
+Enforce strict multi-tenant isolation (association_id) 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Manager accessing unauthorized data 
+• 
+Member assigned to invalid branch 
+• 
+Branch reassignment to another region 
+----------------Page (20) Break----------------
+• 
+User selects association 
+A. Member Registration (Frontend) 
+1. Account Registration Flows 
+ 
+REQUIRED FEATURES  
+ 
+• 
+Account management  
+• 
+Renewal system (yearly) 
+• 
+Account ID generation 
+• 
+QR ID system 
+• 
+Vendor accounts 
+• 
+Master → Sub account relationship 
+• 
+Account lifecycle (inactive → pending → active → suspended) 
+• 
+Registration flows 
+Design a complete Member & Account system including: 
+OBJECTIVE 
+ 
+Each association is isolated via association_id. 
+• 
+Sub Account (child of Master) 
+• 
+Vendor (business only) 
+• 
+Master (full member) 
+Member Layer  
+• 
+Branch Manager 
+• 
+Regional Manager 
+• 
+National Consultant 
+• 
+National Manager 
+• 
+National Admin 
+Association Layer (Admins) 
+• 
+Employees (Super Admin, System Manager, System Consultant) 
+Platform Layer 
+MemSyst manages different types of accounts within each association: 
+SYSTEM CONTEXT   
+ 
+• 
+Organizational Structure (Step 4) 
+• 
+Association Setup (Step 3) 
+• 
+RBAC (Step 2) 
+• 
+Authentication (Step 1) 
+Build on top of: 
+Management system for a multi-tenant SaaS platform called MemSyst. 
+You are a senior backend architect and NestJS expert designing the Member & Account 
+ 
+易 Step Five---------------------------------------------------------- 
+----------------Page (21) Break----------------
+• 
+Pending requires approval 
+• 
+Only active users can access system 
+Rules: 
+• 
+suspended 
+• 
+active 
+• 
+pending 
+• 
+inactive 
+Statuses: 
+3. Account Status Lifecycle 
+ 
+• 
+Stored in members table 
+• 
+Auto-generated 
+• 
+Unique per association 
+Requirements: 
+• 
+ASSOC1 -VEN-000001 
+• 
+ASSOC1 -MEM-000001 
+Example: 
+• 
+{PREFIX}-{TYPE}-{NUMBER}  
+Format: 
+Each account must have: 
+2. Account ID System 
+ 
+• 
+Limited permissions 
+• 
+Cannot create other accounts 
+• 
+Linked via parent_member_id 
+Sub accounts: 
+o 
+Manage sub accounts 
+o 
+Create sub accounts 
+• 
+Only Master accounts can: 
+C. Sub Account Creation 
+ 
+• 
+Status → active after setup 
+• 
+Assigned role 
+• 
+User registers via invite link 
+• 
+National Admin invites user 
+B. Admin Registration (Invite Only) 
+ 
+• 
+National Admin approves → active 
+• 
+Status → pending 
+• 
+User logs in → completes profile 
+o 
+status = inactive 
+• 
+Account created: 
+• 
+Registers with email + password 
+----------------Page (22) Break----------------
+Validate: 
+• 
+branch_id 
+• 
+region_id 
+• 
+association_id 
+Each member must have: 
+7. Member Assignment (Structure Integration) 
+ 
+• 
+Field validation 
+• 
+Required fields 
+Support: 
+• 
+Store values per member 
+• 
+Each association defines custom fields 
+Use dynamic fields: 
+6. Profile System (Flexible Fields) 
+ 
+• 
+Expiry date 
+• 
+Status 
+• 
+Association 
+• 
+Account type 
+• 
+Name  
+Verification page shows: 
+/verify/{account_id} 
+Scan → opens verification page: 
+• 
+QR Code linked to account_id 
+Each account must have: 
+5. QR Code System 
+ 
+• 
+Cannot create accounts 
+• 
+Cannot post 
+• 
+Limited access 
+• 
+Child account 
+Sub: 
+• 
+Cannot create sub accounts 
+• 
+Can post marketplace content 
+• 
+Business account 
+Vendor: 
+• 
+Can post marketplace content 
+• 
+Can create sub accounts 
+• 
+Full member 
+Master: 
+4. Member Types (Strict Rules) 
+ 
+• 
+Suspended blocks access 
+----------------Page (23) Break----------------
+• 
+member_field_values 
+• 
+custom_fields 
+• 
+members 
+• 
+association_users 
+• 
+users 
+Use: 
+DATABASE TABLES (USE & EXTEND)  
+ 
+• 
+Updates 
+• 
+Suspension 
+• 
+Approval 
+• 
+Account creation 
+Log all actions: 
+11. Audit Logging 
+ 
+• 
+Suspend 
+• 
+Reject 
+• 
+Approve 
+Actions: 
+o 
+Vendors 
+o 
+Members 
+• 
+National Admin approves: 
+10. Approval Workflow 
+ 
+• 
+Manage sub accounts 
+Master accounts can: 
+• 
+Soft delete accounts 
+• 
+Suspend / Unsuspend 
+• 
+Assign role 
+• 
+Update profile 
+Admins can: 
+9. Account Management System  
+ 
+• 
+Auto unsuspend after renewal 
+• 
+On payment → extend expiry 
+• 
+If expired → suspend account 
+System behavior: 
+• 
+expiry_date stored per member 
+Yearly subscription: 
+8. Account Renewal System 
+ 
+• 
+Branch belongs to region 
+• 
+Region belongs to association 
+----------------Page (24) Break----------------
+Explain: 
+5. Renewal Logic 
+ 
+• 
+Verification endpoint 
+• 
+Storage 
+• 
+Generation 
+Explain: 
+4. QR Code Logic 
+ 
+Explain logic step-by-step. 
+• 
+RenewalService 
+• 
+QRService 
+• 
+AccountService 
+• 
+MembersService  
+Design: 
+3. Service Layer (NestJS) 
+ 
+• 
+GET /members/:id/sub-accounts 
+• 
+POST /members/sub 
+Sub Accounts: 
+• 
+POST /members/:id/suspend 
+• 
+POST /members/:id/reject 
+• 
+POST /members/:id/approve 
+Admin Actions: 
+• 
+PUT /members/:id 
+• 
+GET /members/:id 
+Profile: 
+• 
+POST /auth/register (member) 
+Registration: 
+Provide: 
+2. API Endpoints 
+ 
+• 
+expiry_date handling 
+• 
+account_id generation logic 
+• 
+parent-child relationship 
+• 
+members table (full structure) 
+Define: 
+1. Database Design 
+ 
+REQUIRED OUTPUT  
+ 
+• 
+audit_logs 
+• 
+qr_codes 
+----------------Page (25) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+accounts, approval workflows, QR verification, and lifecycle management. 
+Produce a production-ready Member & Account system that supports hierarchical 
+GOAL  
+ 
+• 
+Avoid hardcoding logic 
+• 
+Ensure scalability 
+• 
+Maintain data integrity 
+• 
+Enforce strict multi-tenant isolation 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Invalid region/branch assignment 
+• 
+Duplicate account_id 
+• 
+Expired account tries to login 
+• 
+Member deleted but has sub accounts 
+8. Edge Cases 
+ 
+• 
+Protect QR verification endpoint 
+• 
+Enforce association_id 
+• 
+Prevent unauthorized account creation 
+7. Security Considerations 
+ 
+• 
+Prevent sub account misuse 
+• 
+Prevent vendor creating sub accounts 
+• 
+Prevent invalid parent-child assignment 
+6. Validation Rules 
+ 
+• 
+Auto suspend / unsuspend 
+• 
+Expiry detection 
+• 
+Scheduled job (cron) 
+----------------Page (26) Break----------------
+• 
+balance 
+• 
+association_id 
+• 
+owner_id 
+(platform | association | region | branch | member) 
+• 
+owner_type: 
+Use a single wallets table with: 
+1. Wallet System (Unified Design) 
+ 
+REQUIRED FEATURES  
+ 
+• 
+Wallet balance management  
+• 
+Revenue splitting logic 
+• 
+Payment recording 
+• 
+Transaction ledger 
+• 
+Wallet creation and ownership 
+Design a complete Wallet & Financial system including: 
+OBJECTIVE 
+ 
+• 
+Scalable 
+• 
+Secure 
+• 
+Auditable 
+• 
+Traceable 
+All financial operations must be: 
+• 
+Member Wallet (Master & Vendor) 
+• 
+Branch Wallet 
+• 
+Region Wallet 
+• 
+Association Wallet 
+• 
+Platform Wallet 
+Wallet Levels: 
+MemSyst supports financial operations across multiple levels: 
+SYSTEM CONTEXT   
+ 
+• 
+Member & Account System (Step 5) 
+• 
+Organizational Structure (Step 4) 
+• 
+Association Setup (Step 3) 
+• 
+RBAC (Step 2) 
+• 
+Authentication (Step 1) 
+Build on top of: 
+MemSyst.  
+Transactions, and Revenue Splitting system for a multi-tenant SaaS platform called 
+You are a senior backend architect and NestJS expert designing the Wallet, 
+易 Step Six--------------------------------- 
+----------------Page (27) Break----------------
+ 
+• 
+Ads 
+• 
+Marketplace posts 
+Used for: 
+• 
+If sufficient → deduct 
+• 
+If insufficient → reject 
+• 
+Check wallet balance 
+Before any paid action: 
+4. Wallet Deduction Logic 
+ 
+• 
+Applied automatically 
+• 
+Stored in database 
+• 
+Configurable per association 
+Requirements: 
+• 
+Branch: 35%  
+• 
+Region: 30% 
+• 
+Association: 20% 
+• 
+Platform: 15% 
+Example: 
+• 
+Branch 
+• 
+Region 
+• 
+Association 
+• 
+Platform 
+Split across: 
+When a payment occurs: 
+3. Revenue Splitting (Your Model) 
+ 
+• 
+metadata (JSON) 
+• 
+status 
+• 
+source (payment, fee, transfer) 
+• 
+reference 
+• 
+amount  
+• 
+wallet_id 
+Each transaction must include: 
+• 
+debit 
+• 
+credit 
+Transaction types: 
+All money movement must be recorded: 
+2. Transaction Ledger (CRITICAL) 
+ 
+• 
+Wallet auto-created when entity is created 
+• 
+Every entity has ONE wallet 
+Rules: 
+----------------Page (28) Break----------------
+DATABASE TABLES (USE & EXTEND)  
+ 
+• 
+Full audit trail 
+• 
+No duplicate reversal 
+Ensure: 
+• 
+Refund payments 
+• 
+Reverse transactions 
+Admins should be able to: 
+10. Reversal & Refund Support 
+ 
+• 
+Store balance + verify with ledger 
+Recommend:  
+• 
+Derived from transactions (accurate) 
+• 
+Stored balance (fast) 
+Two approaches: 
+9. Wallet Balance Calculation 
+ 
+• 
+Be traceable via reference ID 
+• 
+Be reversible (if needed) 
+• 
+Be logged 
+Every financial action must: 
+8. Audit & Traceability 
+ 
+• 
+Ensure atomic operations 
+• 
+Prevent partial updates 
+• 
+Use database transactions 
+7. Transaction Integrity (VERY IMPORTANT) 
+ 
+• 
+Member → one wallet 
+• 
+Branch → one wallet 
+• 
+Region → one wallet 
+• 
+Association → one wallet 
+• 
+Platform → global wallet 
+Map ownership: 
+6. Multi-Level Wallet Ownership 
+ 
+• 
+Record transaction 
+• 
+Payment → credit wallet 
+Flow: 
+• 
+Internal transfers (future) 
+• 
+External payments (Paystack) 
+Support funding via: 
+5. Wallet Funding (Integration Ready) 
+----------------Page (29) Break----------------
+ 
+• 
+Where Paystack webhook will plug in 
+• 
+How wallet connects to payment system 
+Explain: 
+5. Payment Integration Hooks (Preparation) 
+ 
+• 
+Example transaction breakdown 
+• 
+How funds are distributed 
+• 
+How split is calculated 
+Explain: 
+4. Revenue Split Logic 
+ 
+Explain logic step-by-step. 
+• 
+RevenueSplitService 
+• 
+TransactionService 
+• 
+WalletService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+• 
+POST /transactions/reverse 
+• 
+POST /transactions/transfer 
+Transactions: 
+• 
+GET /wallets/:id/transactions 
+• 
+GET /wallets/:id 
+Wallet: 
+Provide: 
+2. API Endpoints 
+ 
+• 
+relationships and indexes 
+• 
+revenue_splits table 
+• 
+transactions table 
+• 
+wallets table 
+Define: 
+1. Database Design 
+ 
+REQUIRED OUTPUT  
+ 
+• 
+audit_logs 
+• 
+revenue_splits 
+• 
+payments  
+• 
+transactions 
+• 
+wallets 
+Use: 
+----------------Page (30) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+accurate transaction tracking, and automated revenue splitting. 
+Produce a production-ready Wallet & Financial system that supports multi-level wallets, 
+GOAL  
+ 
+• 
+Ensure scalability and auditability 
+• 
+Use atomic database transactions 
+• 
+Maintain financial accuracy and integrity 
+• 
+Ensure strict multi-tenant isolation (association_id) 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Wallet not initialized 
+• 
+Incorrect revenue split config 
+• 
+Duplicate transactions 
+• 
+Partial transaction failure 
+8. Edge Cases 
+ 
+• 
+Protect financial endpoints 
+• 
+Validate transaction ownership 
+• 
+Prevent wallet tampering 
+7. Security Considerations 
+ 
+• 
+Ensure correct association context 
+• 
+Prevent invalid owner mapping 
+• 
+Prevent negative balances 
+6. Validation Rules 
+----------------Page (31) Break----------------
+o 
+Generate unique reference 
+o 
+Create payment record 
+• 
+Backend: 
+o 
+amount (GH₵) 
+• 
+Input: 
+User initiates payment: 
+   PAYMENT INITIALIZATION  
+ 
+• 
+UI displays values as GH₵ (derived from units) 
+• 
+Wallet stores units only 
+o 
+1 GH₵ = 1 Unit 
+• 
+Conversion rate: 
+• 
+System converts GH₵ → Units 
+• 
+Users fund wallet using GH₵ (real money) 
+   PAYMENT UNIT MODEL   
+ 
+• 
+Cash -out (admin-controlled) 
+• 
+Wallet funding 
+• 
+Webhook handling 
+• 
+Payment verification 
+• 
+Payment initialization 
+Design a complete Payments system including: 
+OBJECTIVE 
+ 
+• 
+Auditable 
+• 
+Idempotent 
+• 
+Traceable 
+• 
+Secure 
+All financial operations must be: 
+MemSyst uses a wallet-based system integrated with Paystack. 
+SYSTEM CONTEXT   
+ 
+• 
+Wallet System (Step 6) 
+• 
+Member & Account System (Step 5) 
+• 
+Organizational Structure (Step 4) 
+• 
+Association Setup (Step 3) 
+• 
+RBAC (Step 2) 
+• 
+Authentication (Step 1) 
+Build on top of: 
+for a multi-tenant SaaS platform called MemSyst. 
+You are a senior backend architect and NestJS expert designing the Payments module 
+易 Step Seven----------------------------------------------------- 
+----------------Page (32) Break----------------
+• 
+amount_currency (for audit) 
+• 
+amount_units 
+• 
+wallet_id 
+Each transaction must include: 
+   TRANSACTION REQUIREMENTS    
+ 
+o 
+source = payment 
+o 
+type = credit 
+• 
+Record transaction: 
+• 
+Credit wallet (units) 
+• 
+units_credited = amount_paid 
+On successful payment: 
+   WALLET FUNDING   
+ 
+8.  Record transaction 
+7.  Credit wallet 
+6.  Convert amount → units 
+5.  Update payment status 
+4.  Ensure not already processed (idempotency) 
+3.  Check reference exists 
+2.  Verify transaction via Paystack API 
+1.  Validate Paystack signature 
+On receiving webhook: 
+   WEBHOOK HANDLING (CRITICAL)   
+ 
+• 
+Handle webhook securely 
+• 
+Verify transaction 
+• 
+Initialize transaction 
+Backend responsibilities: 
+• 
+Paystack secret key (backend) 
+• 
+Paystack public key (frontend) 
+Use: 
+   PAYSTACK INTEGRATION   
+ 
+• 
+status = pending 
+• 
+reference 
+• 
+units_to_credit 
+• 
+amount_paid (currency) 
+• 
+association_id 
+• 
+user_id 
+Store: 
+o 
+Send Paystack payment link 
+----------------Page (33) Break----------------
+• 
+No automatic payout processing 
+• 
+Maximum withdrawal = 85% of wallet balance 
+   CASH -OUT RULES 
+ 
+• 
+Log admin action 
+• 
+Admin performs manual payout externally 
+• 
+Mark request as completed 
+• 
+Debit wallet (units) 
+On approval: 
+• 
+Approves or rejects 
+• 
+Verifies manually 
+• 
+Reviews request 
+Platform Admin: 
+Admin Processing 
+ 
+▪ 
+status = pending 
+o 
+Create cashout request: 
+o 
+Send OTP (email verification) 
+o 
+Enforce limit (max 85%) 
+o 
+Validate wallet balance 
+4.  System: 
+▪ 
+Bank (EFT) 
+▪ 
+Mobile Money 
+o 
+payout method: 
+o 
+amount (units) 
+3.  Inputs: 
+2.  Clicks “Cash-Out” 
+1.  User logs in 
+Cash -Out Flow 
+ 
+• 
+Branch Manager 
+• 
+Regional Manager 
+• 
+National Admin 
+ONLY: 
+Eligibility 
+   CASH -OUT SYSTEM  
+ 
+• 
+metadata 
+• 
+status 
+• 
+source (payment, cashout) 
+• 
+reference 
+• 
+type (credit/debit) 
+----------------Page (34) Break----------------
+Webhook:  
+• 
+GET /payments/verify/:reference 
+• 
+POST /payments/initiate 
+Payment:  
+2. API Endpoints 
+ 
+• 
+webhook logs table 
+• 
+cashout_requests table 
+• 
+transactions table 
+• 
+payments table 
+Define: 
+1. Database Design 
+ 
+   REQUIRED OUTPUT  
+ 
+• 
+audit_logs 
+• 
+payment_webhooks  
+• 
+cashout_requests 
+• 
+transactions 
+• 
+wallets 
+• 
+payments  
+   DATABASE TABLES (USE & EXTEND)  
+ 
+• 
+Verification attempts 
+• 
+Webhook payloads  
+• 
+Payment records 
+Store: 
+   PAYMENT LOGGING  
+ 
+• 
+Duplicate credits are prevented 
+• 
+Webhook cannot process same payment twice 
+• 
+Each payment reference is unique 
+Ensure: 
+   IDEMPOTENCY  
+ 
+• 
+failed 
+• 
+success 
+• 
+pending 
+   PAYMENT STATUS  
+ 
+• 
+No member/vendor cash-out 
+• 
+No member-to-member transfer 
+----------------Page (35) Break----------------
+Produce a production-ready Payments system that: 
+GOAL  
+ 
+• 
+Ensure full audit trail 
+• 
+Use atomic operations 
+• 
+Maintain financial integrity 
+• 
+Enforce strict multi-tenant isolation (association_id) 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Invalid reference 
+• 
+Admin double approval 
+• 
+Cash -out exceeds limit 
+• 
+Payment verified but not credited 
+• 
+Duplicate webhook 
+6. Edge Cases 
+ 
+• 
+Protect endpoints 
+• 
+Restrict cash-out roles 
+• 
+Enforce OTP verification 
+• 
+Prevent replay attacks 
+• 
+Validate Paystack signature 
+5. Security Considerations 
+ 
+• 
+Wallet debit logic 
+• 
+Wallet credit logic 
+• 
+Unit conversion 
+Explain: 
+4. Wallet Integration 
+ 
+• 
+CashoutService 
+• 
+WebhookService  
+• 
+PaystackService 
+• 
+PaymentService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+• 
+POST /cashout/:id/reject 
+• 
+POST /cashout/:id/approve 
+• 
+GET /cashout/requests 
+• 
+POST /cashout/request 
+Cash -Out: 
+• 
+POST /payments/webhook  
+----------------Page (36) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+• 
+Maintains strict audit and security standards 
+• 
+Supports secure admin-controlled cash-out 
+• 
+Funds wallets correctly 
+• 
+Converts real money into units 
+----------------Page (37) Break----------------
+o 
+Item 
+• 
+Category: 
+• 
+Description 
+• 
+Title 
+Each post must include: 
+   POST STRUCTURE   
+ 
+• 
+Sub Accounts 
+Not allowed: 
+• 
+Vendor Account 
+• 
+Master Account 
+Allowed: 
+   POST ACTORS  
+ 
+• 
+Admin moderation 
+• 
+Lifecycle management 
+• 
+Auto-renewal 
+• 
+Tier & duration pricing 
+• 
+Post creation 
+Design a complete Posts system including: 
+OBJECTIVE 
+ 
+• 
+Paid using units (wallet deduction) 
+• 
+Time-bound (duration-based) 
+• 
+Tier-based (Standard / Premium) 
+• 
+Owned by members (Master & Vendor only) 
+Posts are: 
+Posts represent marketplace listings created by members. 
+SYSTEM CONTEXT   
+ 
+• 
+Payments System 
+• 
+Wallet System 
+• 
+Member System 
+• 
+Organizational Structure 
+• 
+Association Setup 
+• 
+RBAC  
+• 
+Authentication 
+Build on top of: 
+Listings) module for a multi-tenant SaaS platform called MemSyst. 
+You are a senior backend architect and NestJS expert designing the Posts (Marketplace 
+易 Step Eight A ------------------------------------------ 
+ 
+----------------Page (38) Break----------------
+5.  Create post 
+4.  Deduct fee (units) 
+3.  Check wallet balance 
+2.  Calculate expiry_date 
+1.  Validate all required fields 
+System: 
+o 
+Auto-renew (Yes/No) 
+o 
+Start date 
+o 
+Duration 
+o 
+Tier 
+2.  Selects: 
+1.  Completes post form 
+User: 
+   POST CREATION FLOW   
+ 
+• 
+Configurable pricing (per association) 
+Each duration has: 
+• 
+9 – 12 Months 
+• 
+6 – 9 Months 
+• 
+3 – 6 Months 
+• 
+1 – 3 Months 
+• 
+1 – 4 Weeks 
+For BOTH Standard & Premium: 
+   POST DURATION OPTIONS  
+ 
+• 
+Higher visibility priority 
+• 
+Premium badge 
+• 
+Higher pricing 
+Premium Tier: 
+• 
+Lower pricing 
+Standard Tier: 
+   POST TIER SYSTEM  
+ 
+o 
+Wholesale Price 
+o 
+New Stock 
+o 
+On Promo  
+o 
+Limited Edition 
+• 
+Deal Type: 
+o 
+Service 
+o 
+Job 
+o 
+Tool 
+o 
+Machinery 
+----------------Page (39) Break----------------
+• 
+transactions 
+• 
+post_pricing 
+• 
+posts 
+   DATABASE TABLES (USE & EXTEND)  
+ 
+o 
+Goes through revenue split system (Step 6) 
+• 
+Revenue: 
+o 
+Creator wallet 
+• 
+Fee deducted from: 
+   WALLET INTEGRATION   
+ 
+o 
+Remove from listing 
+o 
+Mark as expired 
+o 
+Auto-detect expired posts 
+• 
+System must: 
+   EXPIRY HANDLING  
+ 
+• 
+Mark as expired 
+• 
+Do not renew 
+If insufficient balance: 
+o 
+Extend duration 
+o 
+Deduct fee 
+o 
+Check wallet balance 
+• 
+On expiry: 
+If enabled: 
+   AUTO -RENEWAL  
+ 
+• 
+Soft delete post 
+• 
+Unsuspend post 
+• 
+Suspend post 
+Admins can: 
+   ADMIN CONTROL  
+ 
+• 
+expired (auto) 
+• 
+deleted (soft delete) 
+• 
+suspended (hidden) 
+• 
+active (visible) 
+Statuses: 
+   POST LIFECYCLE  
+ 
+7.  Notify Admin 
+6.  Set status = active 
+----------------Page (40) Break----------------
+• 
+Enforce association_id 
+6. Security Considerations 
+ 
+• 
+Ensure wallet balance 
+• 
+Ensure valid duration 
+• 
+Prevent sub accounts posting 
+5. Validation Rules 
+ 
+• 
+Auto-renew execution 
+• 
+Expiry detection 
+• 
+Cron job 
+Explain: 
+4. Renewal Logic 
+ 
+• 
+RenewalService 
+• 
+PricingService 
+• 
+PostsService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+• 
+POST /posts/:id/unsuspend 
+• 
+POST /posts/:id/suspend 
+Admin:  
+• 
+DELETE /posts/:id 
+• 
+PUT /posts/:id 
+• 
+GET /posts/:id 
+• 
+GET /posts 
+• 
+POST /posts 
+2. API ENDPOINTS 
+ 
+• 
+auto_renew flag 
+• 
+expiry_date 
+• 
+start_date 
+• 
+duration field 
+• 
+tier field 
+• 
+posts table (full structure) 
+Define: 
+1. Database Design 
+ 
+   REQUIRED OUTPUT  
+ 
+• 
+wallets 
+----------------Page (41) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+billing, auto-renewal, and admin moderation. 
+Produce a production-ready Posts system that supports tier-based listings, duration 
+GOAL  
+ 
+• 
+Avoid hardcoded pricing 
+• 
+Ensure scalability and accuracy 
+• 
+Enforce multi-tenant isolation 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Duplicate submission 
+• 
+Invalid start date 
+• 
+Auto-renew fails due to low balance 
+• 
+Payment deducted but post fails 
+7. Edge Cases 
+ 
+• 
+Prevent duplicate charges 
+• 
+Validate ownership 
+----------------Page (42) Break----------------
+   AD DISPLAY SCOPE  
+ 
+• 
+External URL (third-party link) 
+• 
+Title (optional) 
+• 
+Logo/Image 
+Each ad must include: 
+   AD STRUCTURE  
+ 
+• 
+Members  (Master, Vendor, Sub) 
+Not allowed: 
+• 
+Branch Manager 
+• 
+Regional Manager 
+• 
+National Admin 
+Allowed: 
+   AD ACTORS  
+ 
+• 
+Carousel-based display with randomization 
+• 
+Admin moderation 
+• 
+Wallet deduction (no revenue split) 
+• 
+Duration-based pricing 
+• 
+Ad creation 
+Design a complete Ads system including: 
+OBJECTIVE 
+ 
+• 
+Displayed globally across the association platform 
+• 
+Managed by Admins & Managers only 
+• 
+Linked to external third-party websites 
+• 
+Simple promotional banners 
+Ads are: 
+Ads are NOT marketplace posts. 
+SYSTEM CONTEXT   
+ 
+• 
+Payments System 
+• 
+Wallet System 
+• 
+Association Setup 
+• 
+RBAC  
+• 
+Authentication 
+Build on top of: 
+Sponsorship) module for a multi-tenant SaaS platform called MemSyst. 
+You are a senior backend architect and NestJS expert designing the Ads (Banner 
+ 
+易 Prompt Eight B---------------------------------------- 
+----------------Page (43) Break----------------
+• 
+Soft delete ad 
+• 
+Unsuspend ad  
+• 
+Suspend ad 
+Admins can: 
+   ADMIN CONTROL  
+ 
+• 
+expired 
+• 
+deleted (soft delete) 
+• 
+suspended 
+• 
+active 
+Statuses: 
+   AD LIFECYCLE  
+ 
+8.  Notify Admin 
+7.  Set status = active 
+6.  Create ad 
+5.  Deduct fee (units) 
+4.  Check wallet balance 
+3.  Calculate expiry_date 
+2.  Validate external URL format 
+1.  Validate required fields 
+System: 
+o 
+Start date 
+o 
+Duration 
+2.  Selects: 
+1.  Completes ad form 
+User: 
+   AD CREATION FLOW   
+ 
+• 
+Has configurable pricing 
+Each duration: 
+• 
+9 – 12 Months 
+• 
+6 – 9 Months 
+• 
+3 – 6 Months 
+• 
+1 – 3 Months 
+• 
+1 – 4 Weeks 
+   AD DURATION OPTIONS  
+ 
+• 
+No cross-association visibility 
+• 
+Same ad appears globally within that association 
+o 
+All ad sections within the association platform 
+• 
+Ads are displayed across: 
+----------------Page (44) Break----------------
+ 
+• 
+Optionally pause on interaction 
+• 
+Be responsive (mobile & desktop) 
+• 
+Support manual navigation (next/prev) 
+• 
+Support auto-play 
+Carousel must: 
+   FRONTEND REQUIREMENTS   
+ 
+• 
+association_id matches current tenant 
+• 
+current_date <= expiry_date 
+• 
+current_date >= start_date 
+• 
+status = active 
+Only include ads where: 
+Before rendering ads: 
+   FILTERING RULES 
+ 
+• 
+Re-shuffle order on each page refresh 
+• 
+Randomize ads on every fetch 
+System must: 
+• 
+Ads must NOT have fixed order 
+   RANDOMIZATION RULE   
+ 
+• 
+Auto-slide between ads 
+o 
+Single ad or grouped cards (configurable) 
+• 
+Display: 
+• 
+Loop continuously through all active ads 
+Behavior: 
+Ads must be displayed using a carousel system. 
+   AD DISPLAY LOGIC (CAROUSEL)  
+ 
+• 
+Remove from display automatically 
+• 
+Mark as expired 
+• 
+Auto-detect expired ads 
+System must: 
+   EXPIRY HANDLING  
+ 
+• 
+No revenue split applies 
+o 
+Platform wallet 
+• 
+100% of fee goes to: 
+• 
+Fee is deducted from actor wallet 
+   WALLET & REVENUE RULE  
+ 
+----------------Page (45) Break----------------
+• 
+How randomization is applied 
+• 
+How ads are filtered 
+Explain: 
+4. Display Logic 
+ 
+• 
+AdsDisplayService (for filtering & randomization) 
+• 
+PricingService 
+• 
+AdsService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+• 
+POST /ads/:id/unsuspend 
+• 
+POST /ads/:id/suspend 
+Admin:  
+• 
+DELETE /ads/:id 
+• 
+GET /ads/:id 
+• 
+GET /ads 
+• 
+POST /ads 
+2. API ENDPOINTS 
+ 
+o 
+status 
+o 
+expiry_date 
+o 
+start_date 
+o 
+duration 
+• 
+fields: 
+• 
+ad_pricing table 
+• 
+ads table 
+Define: 
+1. Database Design 
+ 
+   REQUIRED OUTPUT  
+ 
+• 
+wallets 
+• 
+transactions 
+• 
+ad_pricing 
+• 
+ads 
+   DATABASE TABLES (USE & EXTEND)  
+ 
+• 
+Ensure fast load time 
+• 
+Support caching of active ads 
+• 
+Limit number of ads per request (if large dataset) 
+   PERFORMANCE CONSIDERATIONS     
+----------------Page (46) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+• 
+Ensures fairness and consistent exposure 
+• 
+Displays ads via randomized carousel 
+• 
+Uses duration-based billing 
+• 
+Supports banner sponsorships 
+Produce a production-ready Ads system that: 
+GOAL  
+ 
+• 
+Ensure performance and scalability 
+• 
+Enforce multi-tenant isolation 
+• 
+Maintain strict separation from Posts system 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Payment deducted but ad creation fails 
+• 
+Expired ads still cached → must not display 
+• 
+One ad → display without sliding 
+• 
+No active ads → hide carousel 
+7. Edge Cases 
+ 
+• 
+Sanitize external links 
+• 
+Prevent unauthorized access 
+• 
+Enforce association_id isolation 
+6. Security Considerations 
+ 
+• 
+Ensure sufficient wallet balance 
+• 
+Validate external URL format 
+• 
+Restrict creation to admin roles only 
+5. Validation Rules 
+ 
+• 
+How carousel-ready data is returned 
+----------------Page (47) Break----------------
+• 
+New users 
+• 
+All users 
+National Level: 
+Broadcast must support hierarchical targeting: 
+   TARGETING SYSTEM  
+ 
+• 
+File attachment (optional) 
+• 
+Text message (required) 
+Each broadcast must support: 
+   MESSAGE CONTENT   
+ 
+• 
+Inbox Message 
+• 
+In-App Notification 
+• 
+SMS 
+• 
+Push Notification 
+• 
+Email 
+User can select one or multiple: 
+   BROADCAST CHANNELS    
+ 
+• 
+Members (Master, Vendor, Sub) 
+Not allowed: 
+• 
+Branch Manager 
+• 
+Regional Manager 
+• 
+National Admin 
+Allowed: 
+   BROADCAST ACTORS   
+ 
+• 
+Platform revenue (100%, no split) 
+• 
+Wallet deduction 
+• 
+Fee calculation based on recipients 
+• 
+Targeted audience selection 
+• 
+Multi-channel bulk messaging 
+Design a Broadcast Notification system that supports: 
+OBJECTIVE 
+ 
+across multiple channels, with unit-based billing. 
+This module allows Admins and Managers to send bulk notifications to targeted users 
+for MemSyst to include a Broadcast Messaging module. 
+You are a senior backend architect and NestJS expert extending the Notification System 
+ 
+Broadcast Notification System (Paid Bulk Messaging) 
+易  STEP 9B ADD-ON ---------------------------------- 
+----------------Page (48) Break----------------
+   FEE CALCULATION MODEL  
+ 
+o 
+Log activity 
+o 
+Send notifications 
+o 
+Queue broadcast job 
+o 
+Debit wallet 
+o 
+Check wallet balance 
+6.  On confirmation: 
+5.  Display cost to actor 
+o 
+Calculate total cost 
+o 
+Count total recipients per channel 
+o 
+Resolve recipients 
+4.  System: 
+o 
+Optional file attachment 
+o 
+Message text 
+3.  Enter: 
+o 
+Target audience 
+o 
+Channel(s) 
+2.  Select: 
+1.  Actor clicks "Broadcast" 
+   BROADCAST FLOW   
+ 
+• 
+status (new, active, suspended) 
+• 
+branch_id (optional) 
+• 
+region_id (optional) 
+• 
+association_id (mandatory) 
+Target Filters: 
+ 
+• 
+Suspended 
+• 
+Active 
+• 
+New 
+• 
+All users in branch 
+Branch Level: 
+ 
+• 
+Suspended 
+• 
+Active 
+• 
+New 
+• 
+All users in region 
+Regional Level: 
+ 
+• 
+Suspended users 
+• 
+Active users 
+----------------Page (49) Break----------------
+• 
+transactions 
+• 
+notification_logs 
+• 
+broadcast_recipients 
+• 
+broadcasts 
+   DATABASE TABLES (USE & EXTEND)  
+ 
+• 
+failed 
+• 
+completed 
+• 
+processing 
+• 
+pending 
+   BROADCAST STATUS   
+ 
+• 
+per-channel metrics 
+• 
+total_failed 
+• 
+total_sent 
+• 
+total_recipients 
+Track per broadcast: 
+   DELIVERY TRACKING  
+ 
+• 
+Track delivery status 
+• 
+Send per channel asynchronously 
+• 
+Must use queue-based processing 
+   DELIVERY SYSTEM  
+ 
+• 
+No revenue split applies 
+o 
+Platform Wallet 
+• 
+100% credited to: 
+• 
+Fee is deducted from Actor wallet 
+   WALLET & REVENUE RULE  
+ 
+• 
+Inbox cost per recipient 
+• 
+In-App cost per recipient 
+• 
+SMS cost per recipient 
+• 
+Push cost per recipient 
+• 
+Email cost per recipient 
+Each association or platform defines: 
+   CHANNEL PRICING (CONFIGURABLE)    
+ 
+Sum of all selected channels 
+Total cost: 
+Fee per message × Number of recipients = Total channel cost 
+For each channel: 
+----------------Page (50) Break----------------
+• 
+Prevent spam abuse 
+• 
+Restrict to admin roles 
+7. Security Considerations 
+ 
+• 
+Ensure sufficient wallet balance 
+• 
+Validate attachment type/size 
+• 
+Validate channel selection 
+• 
+Prevent empty audience 
+6. Validation Rules 
+ 
+• 
+Retry logic 
+• 
+Channel-based dispatching 
+• 
+Job batching 
+Explain: 
+5. Queue Processing 
+ 
+• 
+How total is derived 
+• 
+How per-channel cost is calculated 
+• 
+How recipients are counted 
+Explain: 
+4. Cost Calculation Logic 
+ 
+• 
+PricingService 
+• 
+RecipientResolverService 
+• 
+BroadcastService 
+Design: 
+3. Service Layer (NestJS) 
+ 
+• 
+GET /broadcasts/:id 
+• 
+GET /broadcasts 
+• 
+POST /broadcasts 
+2. API ENDPOINTS 
+ 
+• 
+pricing configuration table 
+• 
+broadcast_recipients table 
+• 
+broadcasts table 
+Define: 
+1. Database Design 
+ 
+   REQUIRED OUTPUT  
+ 
+• 
+wallets 
+----------------Page (51) Break----------------
+ 
+ 
+  
+ 
+• 
+Delivers notifications reliably across multiple channels 
+• 
+Deducts wallet fees correctly 
+• 
+Calculates cost dynamically 
+• 
+Supports targeted bulk messaging 
+Produce a production-ready Broadcast Notification system that: 
+GOAL  
+ 
+• 
+Ensure full audit logging 
+• 
+Use queue-based processing 
+• 
+Maintain high performance for large recipient sets 
+• 
+Ensure multi-tenant isolation 
+• 
+Use NestJS best practices 
+CONSTRAINTS  
+ 
+• 
+Duplicate broadcast submission 
+• 
+Wallet deducted but job fails 
+• 
+Partial delivery failure 
+• 
+Zero recipients after filtering 
+8. Edge Cases 
+ 
+• 
+Rate limit broadcasts 
+----------------Page (52) Break----------------
